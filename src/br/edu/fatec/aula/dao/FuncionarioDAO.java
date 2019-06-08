@@ -31,33 +31,6 @@ public class FuncionarioDAO implements IDAO {
 
 			connection.setAutoCommit(false);
 
-			/*
-			 * CargoDAO cargoDAO = new CargoDAO(connection);
-			 * funcionario.setCargo((Cargo)
-			 * cargoDAO.consultarExistencia(funcionario.getCargo()));
-			 * 
-			 * RegionalDAO regionalDAO = new RegionalDAO(connection);
-			 * funcionario.setRegional((Regional)
-			 * regionalDAO.consultarExistencia(funcionario.getRegional()));
-			 * 
-			 * UsuarioDAO usuarioDAO = new UsuarioDAO(connection);
-			 * funcionario.setUsuario((Usuario)
-			 * usuarioDAO.consultarExistencia(funcionario.getUsuario()));
-			 * 
-			 * SetorDAO setorDAO = new SetorDAO(connection);
-			 * funcionario.setSetor((Setor)
-			 * setorDAO.consultarExistencia(funcionario.getSetor()));
-			 */
-
-			/*
-			 * PerfilAtendimento perfilAtendimento = new PerfilAtendimento();
-			 * Usuario usuario = new Usuario("admin", "admin",
-			 * perfilAtendimento); usuario.setId(1);
-			 * funcionario.setUsuario(usuario);
-			 */
-
-			// UsuarioDAO usuarioDAO = new UsuarioDAO(connection);
-			// usuarioDAO.salvar(funcionario.getUsuario());
 
 			StringBuilder sql = new StringBuilder();
 			sql.append("INSERT INTO tb_funcionario(fun_nome, fun_cpf, ");
@@ -161,13 +134,18 @@ public class FuncionarioDAO implements IDAO {
 
 		PreparedStatement pst = null;
 		ResultSet rs;
-
+		Funcionario filtroFuncionario = (Funcionario) entidade;
 		List<EntidadeDominio> funcionarios = new ArrayList<>();
+		
+		if (filtroFuncionario.getNome() == null) {
+			filtroFuncionario.setNome("");
+		}
+		
 
 		try {
 			connection = Conexao.getConnectionPostgres();
 
-			pst = connection.prepareStatement("SELECT * FROM tb_funcionario where fun_status = true");
+			pst = connection.prepareStatement("SELECT emp.fun_id FROM tb_funcionario where fun_status = true");
 			rs = pst.executeQuery();
 
 			while (rs.next()) {

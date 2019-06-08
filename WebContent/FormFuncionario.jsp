@@ -4,13 +4,15 @@
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
+
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="ISO-8859-1">
 <title>:::: CADASTRO FUNCIONARIO::::</title>
 
-
+<link rel="stylesheet"
+	href="https://fonts.googleapis.com/icon?family=Material+Icons">
 <link rel="stylesheet"
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 <script
@@ -62,6 +64,12 @@ body {
 </style>
 
 </head>
+
+<%
+		Funcionario funcionario = (Funcionario) request.getAttribute("funcionario");
+
+%>
+
 <body>
 
 	<div class="caixa">
@@ -69,8 +77,15 @@ body {
 		<form action="ControleFuncionario" method="POST">
 
 			<div class="form-group" id="tam">
-				<label for="txtMatricula">Matricula:</label><br> <input
-					type="text" id="txtMatricula" name="txtMatricula" /> <br>
+			<label for="txtMatricula">Matricula:</label> <br>
+			<%
+				out.print("<input type='text' id='txtMatricula' name='txtMatricula' value=");
+				if(funcionario != null)
+					out.print("'"+ funcionario.getMatricula() +"' /><br>"); 
+				else
+					out.print(" ><br>"); 		
+			%>
+			
 			</div>
 
 			<div class="form-group" id="tam">
@@ -161,57 +176,39 @@ body {
 			<TH>NOME</TH>
 			<TH>CPF:</TH>
 			<TH>EMAIL:</TH>
+			<TH>ACTION:</TH>
 		</TR>
 
-
 		<%
-	
-		List<EntidadeDominio> entidades = (List<EntidadeDominio>) request.getAttribute("resultado");
-			
-			if (entidades != null) {			
+			List<EntidadeDominio> entidades = (List<EntidadeDominio>) request.getAttribute("resultado");
+
+			if (entidades != null) {
 				StringBuilder sbRegistro = new StringBuilder();
 				StringBuilder sbLink = new StringBuilder();
 
-				
-					for (int i = 0; i < entidades.size(); i++) {
-						Funcionario p =  (Funcionario)entidades.get(i);
-						sbRegistro.setLength(0);
-						sbLink.setLength(0);
-
-						//	<a href="nome-do-lugar-a-ser-levado">descrição</a>
-
-						sbRegistro.append("<TR ALIGN='CENTER'>");			
-
-						sbRegistro.append("<TD>");
-						sbRegistro.append(sbLink.toString());
-						sbRegistro.append(p.getId());			
-						sbRegistro.append("</TD>");
-
-						sbRegistro.append("<TD>");
-						sbRegistro.append(sbLink.toString());
-						sbRegistro.append(p.getNome());
-						sbRegistro.append("</TD>");
-
-						sbRegistro.append("<TD>");
-						sbRegistro.append(sbLink.toString());
-						sbRegistro.append(p.getCpf());
-						sbRegistro.append("</TD>");
-						
-						sbRegistro.append("<TD>");
-						sbRegistro.append(sbLink.toString());
-						sbRegistro.append(p.getEmail());						
-						sbRegistro.append("</TD>");
-
-						sbRegistro.append("</TR>");
-
-						out.print(sbRegistro.toString());
-
-					}
-				}
-
-			
+				for (int i = 0; i < entidades.size(); i++) {
+					Funcionario p = (Funcionario) entidades.get(i);
 		%>
 
+		<TR ALIGN='CENTER'>
+			<td><%=p.getId()%></td>
+			<td><%=p.getNome()%></td>
+			<td><%=p.getCpf()%></td>
+			<td><%=p.getEmail()%></td>
+
+			<td>
+				<div class="icon">
+					<a href="ControleFuncionario?id=<%= p.getId() %>"><i class="material-icons" style="color: green;">create</i></a>
+				</div>
+				<div class="icon">
+					<a href="#"><i class="material-icons" style="color: green;">clear</i></a>
+				</div>
+			</td>
+		</TR>
+		<%
+				}
+			}
+		%>
 
 </body>
 </html>

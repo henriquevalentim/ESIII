@@ -26,7 +26,18 @@ public class ControleFuncionario extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+			
+			int id = Integer.parseInt(request.getParameter("id"));
+			Funcionario funcionario = new Funcionario();
+			funcionario.setId(id);
+			
+			IDAO funcionarioDAO = new FuncionarioDAO();
+			List<EntidadeDominio> func = funcionarioDAO.consultar(funcionario);
+			request.setAttribute("funcionario", func.get(0));
+			RequestDispatcher rd = request.getRequestDispatcher("FormFuncionario.jsp");  		
+			  
+			rd.forward(request, response);
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -65,7 +76,7 @@ public class ControleFuncionario extends HttpServlet {
 			String msg = fachada.salvar(funcionario);
 			
 			session.setAttribute("msg", msg);
-			response.sendRedirect("FormFuncionario.jsp");
+			request.getRequestDispatcher("FormFuncionario.jsp").forward(request, response);
 			
 		}else if(request.getParameter("operacao").equals("BUSCAR_FUNCIONARIO")) {
 			
@@ -80,9 +91,7 @@ public class ControleFuncionario extends HttpServlet {
 			
 			request.setAttribute("resultado", funcionarios);
 			
-			RequestDispatcher rd = request.getRequestDispatcher("FormFuncionario.jsp");  		
-			  
-			rd.forward(request, response);
+			request.getRequestDispatcher("FormFuncionario.jsp").forward(request, response);
 
 			
 		}else if(request.getParameter("operacao").equals("ALTERAR_FUNCIONARIO")) {
@@ -118,7 +127,7 @@ public class ControleFuncionario extends HttpServlet {
 			String msg = fachada.alterar(funcionario);
 			
 			session.setAttribute("msg", msg);
-			response.sendRedirect("FormFuncionario.jsp");
+			request.getRequestDispatcher("FormFuncionario.jsp").forward(request, response);
 			
 		}else if(request.getParameter("operacao").equals("EXCLUIR_FUNCIONARIO")) {
 			
@@ -130,7 +139,7 @@ public class ControleFuncionario extends HttpServlet {
 			HttpSession session = request.getSession();
 			String msg = fachada.excluir(funcionario);
 			session.setAttribute("msg", msg);
-			response.sendRedirect("FormFuncionario.jsp");
+			request.getRequestDispatcher("FormFuncionario.jsp").forward(request, response);
 			
 		}
 	}
