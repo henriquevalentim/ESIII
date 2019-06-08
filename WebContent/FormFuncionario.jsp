@@ -66,7 +66,7 @@ body {
 </head>
 
 <%
-		Funcionario funcionario = (Funcionario) request.getAttribute("funcionario");
+	Funcionario funcionario = (Funcionario) request.getAttribute("funcionario");
 %>
 
 <body>
@@ -76,38 +76,63 @@ body {
 		<form action="ControleFuncionario" method="POST">
 
 			<div class="form-group" id="tam">
-			<label for="txtMatricula">Matricula:</label> <br>
-			<%
-				out.print("<input type='text' id='txtMatricula' name='txtMatricula' value=");
-				if(funcionario != null)
-					out.print("'"+ funcionario.getMatricula() +"' /><br>"); 
-				else
-					out.print(" ><br>"); 		
-			%>
+				<label for="txtMatricula">Matricula:</label> <br>
+				<%
+					out.print("<input type='text' id='txtMatricula' name='txtMatricula' value=");
+					if (funcionario != null)
+						out.print("'" + funcionario.getMatricula() + "' /><br>");
+					else
+						out.print(" ><br>");
+				%>
 			</div>
 
 			<div class="form-group" id="tam">
-				<label for="txtNome">Nome:</label> <br> <input type="text"
-					id="txtNome" name="txtNome" /> <br>
+				<label for="txtNome">Nome:</label> <br>
+				<%
+					out.print("<input type='text' id='txtNome' name='txtNome' value=");
+					if (funcionario != null)
+						out.print("'" + funcionario.getNome() + "' /><br>");
+					else
+						out.print(" ><br>");
+				%>
 			</div>
 
 			<div class="form-group" id="tam">
-				<label for="txtCPF">CPF:</label><br> <input type="text"
-					id="txtCPF" name="txtCPF" /> <br>
+				<label for="txtCPF">CPF:</label><br>
+				<%
+					out.print("<input type='text' id='txtCPF' name='txtCPF' value=");
+					if (funcionario != null)
+						out.print("'" + funcionario.getCpf() + "' /><br>");
+					else
+						out.print(" ><br>");
+				%>
 			</div>
 
 			<div class="form-group" id="tam">
-				<label for="txtEmail">Email:</label><br> <input type="email"
-					id="txtEmail" name="txtEmail" /> <br>
+				<label for="txtEmail">Email:</label><br>
+				<%
+					out.print("<input type='text' id='txtEmail' name='txtEmail' value=");
+					if (funcionario != null)
+						out.print("'" + funcionario.getCpf() + "' /><br>");
+					else
+						out.print(" ><br>");
+				%>
 			</div>
 
 			<div class="form-group" id="tam">
-				<label for="txtSenha">Senha:</label><br> <input type="password"
-					id="txtSenha" name="txtSenha" /> <br>
+				<label for="txtSenha">Senha:</label><br>
+				<%
+					out.print("<input type='text' id='txtSenha' name='txtSenha' value=");
+					if (funcionario != null)
+						out.print("'" + funcionario.getCpf() + "' /><br>");
+					else
+						out.print(" ><br>");
+				%>
 			</div>
 
 			<div class="form-group" id="tam">
-				<label for="txtCargo">Cargo:</label> <br> <select id="txtCargo"
+				<label for="txtCargo">Cargo:</label> <br> 
+				<select id="txtCargo"
 					name="txtCargo">
 					<option value=""></option>
 					<option value="1">Desenvolvedor</option>
@@ -170,7 +195,7 @@ body {
 		</TR>
 
 		<TR>
-			<TH>ID:</TH>
+			<TH>MATRICULA:</TH>
 			<TH>NOME</TH>
 			<TH>CPF:</TH>
 			<TH>EMAIL:</TH>
@@ -189,14 +214,15 @@ body {
 		%>
 
 		<TR ALIGN='CENTER'>
-			<td><%=p.getId()%></td>
+			<td><%=p.getMatricula()%></td>
 			<td><%=p.getNome()%></td>
 			<td><%=p.getCpf()%></td>
 			<td><%=p.getEmail()%></td>
 
 			<td>
 				<div class="icon">
-					<a href="ControleFuncionario?id=<%= p.getId() %>"><i class="material-icons" style="color: green;">create</i></a>
+					<a href="ControleFuncionario?id=<%=p.getId()%>"><i
+						class="material-icons" style="color: green;">create</i></a>
 				</div>
 				<div class="icon">
 					<a href="#"><i class="material-icons" style="color: green;">clear</i></a>
@@ -204,9 +230,9 @@ body {
 			</td>
 		</TR>
 		<%
-				}
+			}
 			}
 		%>
-
+	
 </body>
 </html>

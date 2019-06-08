@@ -27,9 +27,11 @@ public class ControleFuncionario extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 			
+		Funcionario funcionario = new Funcionario();
+		if(request.getParameter("id") != null) {
 			int id = Integer.parseInt(request.getParameter("id"));
-			Funcionario funcionario = new Funcionario();
 			funcionario.setId(id);
+		}
 			
 			IDAO funcionarioDAO = new FuncionarioDAO();
 			List<EntidadeDominio> func = funcionarioDAO.consultar(funcionario);
@@ -83,6 +85,9 @@ public class ControleFuncionario extends HttpServlet {
 			Funcionario funcionario = new Funcionario();
 			
 			funcionario.setMatricula(request.getParameter("txtMatricula"));
+			funcionario.setNome(request.getParameter("txtNome"));
+			funcionario.setCpf(request.getParameter("txtCPF"));
+			funcionario.setEmail(request.getParameter("txtEmail"));
 			funcionario.setId(0);
 			
 			IFachada fachada = new Fachada();

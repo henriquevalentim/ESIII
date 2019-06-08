@@ -138,19 +138,36 @@ public class FuncionarioDAO implements IDAO {
 		if (filtroFuncionario.getMatricula() == null) {
 			filtroFuncionario.setMatricula("");
 		}
+		if (filtroFuncionario.getNome() == null) {
+			filtroFuncionario.setNome("");
+		}
+		if (filtroFuncionario.getCpf() == null) {
+			filtroFuncionario.setCpf("");
+		}
+		if (filtroFuncionario.getEmail() == null) {
+			filtroFuncionario.setEmail("");
+		}
 		
 		StringBuilder sql = new StringBuilder();
 		
-		sql.append("SELECT emp.fun_id,emp.fun_nome,emp.fun_cpf,emp.fun_email,emp.fun_matricula,emp.fun_reg_id,");
-		sql.append("emp.fun_car_id,emp.fun_set_id,reg.reg_nome,car.car_descricao,setor.set_nome");
-		sql.append("FROM tb_funcionario emp, tb_regional reg,tb_cargo car,tb_setor setor WHERE ");
-		sql.append("emp.fun_reg_id=reg.reg_id and emp.fun_car_id=car.car_id and emp.fun_set_id=setor.set_id");
+		sql.append("select emp.fun_id,emp.fun_nome,emp.fun_cpf,emp.fun_email,emp.fun_matricula,emp.fun_reg_id,");
+		sql.append("emp.fun_car_id,emp.fun_set_id from tb_funcionario emp where fun_id > 0");
+
 		
 		if (filtroFuncionario.getId() != 0 && filtroFuncionario.getMatricula().equals("")) {
 			sql.append(" and emp.fun_id=?");
-		} else if (filtroFuncionario.getId() == 0
-				&& !filtroFuncionario.getMatricula().equals("")) {
+		}
+		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getMatricula().equals("")) {
 			sql.append(" and emp.fun_matricula like ?");
+		}
+		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getNome().equals("")) {
+			sql.append(" and emp.fun_nome like ?");
+		}
+		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getCpf().equals("")) {
+			sql.append(" and emp.fun_cpf like ?");
+		}
+		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getEmail().equals("")) {
+			sql.append(" and emp.fun_email like ?");
 		}
 
 		List<EntidadeDominio> funcionarios = new ArrayList<>();
@@ -158,13 +175,22 @@ public class FuncionarioDAO implements IDAO {
 			connection = Conexao.getConnectionPostgres();
 
 			pst = connection.prepareStatement(sql.toString());
-			
+			int i = 1;
 			if (filtroFuncionario.getId() != 0
 					&& filtroFuncionario.getMatricula().equals("")) {
 				pst.setInt(1, filtroFuncionario.getId());
-			} else if (filtroFuncionario.getId() == 0
-					&& !filtroFuncionario.getMatricula().equals("")) {
-				pst.setString(1, "%" + filtroFuncionario.getMatricula() + "%");
+			} 
+			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getMatricula().equals("")) {
+				pst.setString(i++, "%" + filtroFuncionario.getMatricula() + "%");
+			}
+			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getNome().equals("")) {
+				pst.setString(i++, "%" + filtroFuncionario.getNome() + "%");
+			}
+			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getCpf().equals("")) {
+				pst.setString(i++, "%" + filtroFuncionario.getCpf() + "%");
+			}
+			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getEmail().equals("")) {
+				pst.setString(i++, "%" + filtroFuncionario.getEmail() + "%");
 			}
 			
 			ResultSet rs = pst.executeQuery();
@@ -183,9 +209,9 @@ public class FuncionarioDAO implements IDAO {
 				setor.setId(rs.getInt("fun_set_id"));
 				regional.setId(rs.getInt("fun_reg_id"));
 				
-				cargo.setDescricao(rs.getString("car_descricao"));
-				setor.setNome(rs.getString("set_nome"));
-				regional.setNome(rs.getString("reg_nome"));
+				//cargo.setDescricao(rs.getString("car.car_descricao"));
+				//setor.setNome(rs.getString("setor.set_nome"));
+				//regional.setNome(rs.getString("reg.reg_nome"));
 
 				funcionario.setCargo(cargo);
 				funcionario.setSetor(setor);
