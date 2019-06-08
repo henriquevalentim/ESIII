@@ -67,7 +67,6 @@ body {
 
 <%
 		Funcionario funcionario = (Funcionario) request.getAttribute("funcionario");
-
 %>
 
 <body>
@@ -85,7 +84,6 @@ body {
 				else
 					out.print(" ><br>"); 		
 			%>
-			
 			</div>
 
 			<div class="form-group" id="tam">

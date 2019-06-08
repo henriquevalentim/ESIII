@@ -83,6 +83,7 @@ public class ControleFuncionario extends HttpServlet {
 			Funcionario funcionario = new Funcionario();
 			
 			funcionario.setMatricula(request.getParameter("txtMatricula"));
+			funcionario.setId(0);
 			
 			IFachada fachada = new Fachada();
 			

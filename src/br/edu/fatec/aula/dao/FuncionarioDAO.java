@@ -31,13 +31,12 @@ public class FuncionarioDAO implements IDAO {
 
 			connection.setAutoCommit(false);
 
-
 			StringBuilder sql = new StringBuilder();
 			sql.append("INSERT INTO tb_funcionario(fun_nome, fun_cpf, ");
-			sql.append("fun_email,fun_matricula,fun_senha,fun_reg_id,fun_car_id,fun_usu_id,fun_set_id,fun_dtcontratacao) VALUES (?,?,?,?,?,?,?,?,?,?)");
+			sql.append(
+					"fun_email,fun_matricula,fun_senha,fun_reg_id,fun_car_id,fun_usu_id,fun_set_id,fun_dtcontratacao) VALUES (?,?,?,?,?,?,?,?,?,?)");
 
-			pst = connection.prepareStatement(sql.toString(),
-					Statement.RETURN_GENERATED_KEYS);
+			pst = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 
 			pst.setString(1, funcionario.getNome());
 			pst.setString(2, funcionario.getCpf());
@@ -133,21 +132,42 @@ public class FuncionarioDAO implements IDAO {
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
 
 		PreparedStatement pst = null;
-		ResultSet rs;
+	
 		Funcionario filtroFuncionario = (Funcionario) entidade;
-		List<EntidadeDominio> funcionarios = new ArrayList<>();
-		
-		if (filtroFuncionario.getNome() == null) {
-			filtroFuncionario.setNome("");
+
+		if (filtroFuncionario.getMatricula() == null) {
+			filtroFuncionario.setMatricula("");
 		}
 		
+		StringBuilder sql = new StringBuilder();
+		
+		sql.append("SELECT emp.fun_id,emp.fun_nome,emp.fun_cpf,emp.fun_email,emp.fun_matricula,emp.fun_reg_id,");
+		sql.append("emp.fun_car_id,emp.fun_set_id,reg.reg_nome,car.car_descricao,setor.set_nome");
+		sql.append("FROM tb_funcionario emp, tb_regional reg,tb_cargo car,tb_setor setor WHERE ");
+		sql.append("emp.fun_reg_id=reg.reg_id and emp.fun_car_id=car.car_id and emp.fun_set_id=setor.set_id");
+		
+		if (filtroFuncionario.getId() != 0 && filtroFuncionario.getMatricula().equals("")) {
+			sql.append(" and emp.fun_id=?");
+		} else if (filtroFuncionario.getId() == 0
+				&& !filtroFuncionario.getMatricula().equals("")) {
+			sql.append(" and emp.fun_matricula like ?");
+		}
 
+		List<EntidadeDominio> funcionarios = new ArrayList<>();
 		try {
 			connection = Conexao.getConnectionPostgres();
 
-			pst = connection.prepareStatement("SELECT emp.fun_id FROM tb_funcionario where fun_status = true");
-			rs = pst.executeQuery();
-
+			pst = connection.prepareStatement(sql.toString());
+			
+			if (filtroFuncionario.getId() != 0
+					&& filtroFuncionario.getMatricula().equals("")) {
+				pst.setInt(1, filtroFuncionario.getId());
+			} else if (filtroFuncionario.getId() == 0
+					&& !filtroFuncionario.getMatricula().equals("")) {
+				pst.setString(1, "%" + filtroFuncionario.getMatricula() + "%");
+			}
+			
+			ResultSet rs = pst.executeQuery();
 			while (rs.next()) {
 				Funcionario funcionario = new Funcionario();
 				Cargo cargo = new Cargo();
@@ -162,6 +182,10 @@ public class FuncionarioDAO implements IDAO {
 				cargo.setId(rs.getInt("fun_car_id"));
 				setor.setId(rs.getInt("fun_set_id"));
 				regional.setId(rs.getInt("fun_reg_id"));
+				
+				cargo.setDescricao(rs.getString("car_descricao"));
+				setor.setNome(rs.getString("set_nome"));
+				regional.setNome(rs.getString("reg_nome"));
 
 				funcionario.setCargo(cargo);
 				funcionario.setSetor(setor);
@@ -170,7 +194,7 @@ public class FuncionarioDAO implements IDAO {
 				funcionarios.add(funcionario);
 
 			}
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -181,7 +205,7 @@ public class FuncionarioDAO implements IDAO {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return funcionarios;
 	}
 }
