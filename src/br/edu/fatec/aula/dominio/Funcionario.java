@@ -9,8 +9,6 @@ public class Funcionario extends EntidadeDominio {
 	private String email;
 	private String matricula;
 	private String senha;
-	
-
 	private Regional regional;
 	private Cargo cargo;
 	private Setor setor;

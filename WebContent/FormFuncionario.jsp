@@ -113,7 +113,7 @@ body {
 				<%
 					out.print("<input type='text' id='txtEmail' name='txtEmail' value=");
 					if (funcionario != null)
-						out.print("'" + funcionario.getCpf() + "' /><br>");
+						out.print("'" + funcionario.getEmail() + "' /><br>");
 					else
 						out.print(" ><br>");
 				%>
@@ -122,9 +122,9 @@ body {
 			<div class="form-group" id="tam">
 				<label for="txtSenha">Senha:</label><br>
 				<%
-					out.print("<input type='text' id='txtSenha' name='txtSenha' value=");
+					out.print("<input type='password' id='txtSenha' name='txtSenha' value=");
 					if (funcionario != null)
-						out.print("'" + funcionario.getCpf() + "' /><br>");
+						out.print("'" + funcionario.getSenha() + "' /><br>");
 					else
 						out.print(" ><br>");
 				%>
@@ -221,11 +221,11 @@ body {
 
 			<td>
 				<div class="icon">
-					<a href="ControleFuncionario?id=<%=p.getId()%>"><i
+					<a href="ControleFuncionario?id=<%=p.getId()%>&op=ed"><i
 						class="material-icons" style="color: green;">create</i></a>
 				</div>
 				<div class="icon">
-					<a href="#"><i class="material-icons" style="color: green;">clear</i></a>
+					<a href="ControleFuncionario?id=<%=p.getId()%>&op=ex"><i class="material-icons" style="color: green;">clear</i></a>
 				</div>
 			</td>
 		</TR>

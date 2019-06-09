@@ -33,8 +33,7 @@ public class FuncionarioDAO implements IDAO {
 
 			StringBuilder sql = new StringBuilder();
 			sql.append("INSERT INTO tb_funcionario(fun_nome, fun_cpf, ");
-			sql.append(
-					"fun_email,fun_matricula,fun_senha,fun_reg_id,fun_car_id,fun_usu_id,fun_set_id,fun_dtcontratacao) VALUES (?,?,?,?,?,?,?,?,?,?)");
+			sql.append("fun_email,fun_matricula,fun_senha,fun_reg_id,fun_car_id,fun_usu_id,fun_set_id,fun_dtcontratacao) VALUES (?,?,?,?,?,?,?,?,?,?)");
 
 			pst = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
 
@@ -116,11 +115,11 @@ public class FuncionarioDAO implements IDAO {
 			connection = Conexao.getConnectionPostgres();
 
 			StringBuilder sql = new StringBuilder();
-			sql.append("UPDATE tb_funcionario SET fun_status = false WHERE fun_matricula = ?");
+			sql.append("UPDATE tb_funcionario SET fun_status = false WHERE fun_id = ?");
 
 			pst = connection.prepareStatement(sql.toString());
 
-			pst.setString(1, funcionario.getMatricula());
+			pst.setInt(1, funcionario.getId());
 
 			pst.executeUpdate();
 		} catch (Exception e) {
@@ -151,7 +150,7 @@ public class FuncionarioDAO implements IDAO {
 		StringBuilder sql = new StringBuilder();
 		
 		sql.append("select emp.fun_id,emp.fun_nome,emp.fun_cpf,emp.fun_email,emp.fun_matricula,emp.fun_reg_id,");
-		sql.append("emp.fun_car_id,emp.fun_set_id from tb_funcionario emp where fun_id > 0");
+		sql.append("emp.fun_car_id,emp.fun_set_id from tb_funcionario emp where fun_status = true");
 
 		
 		if (filtroFuncionario.getId() != 0 && filtroFuncionario.getMatricula().equals("")) {
