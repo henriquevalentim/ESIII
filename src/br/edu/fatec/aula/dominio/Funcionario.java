@@ -11,6 +11,15 @@ public class Funcionario extends EntidadeDominio {
 	private String senha;
 	private Regional regional;
 	private Cargo cargo;
+	
+	public String getDtContratacao() {
+		return dtContratacao;
+	}
+
+	public void setDtContratacao(String dtContratacao) {
+		this.dtContratacao = dtContratacao;
+	}
+
 	private Setor setor;
 	private Usuario usuario;
 	private String dtContratacao;

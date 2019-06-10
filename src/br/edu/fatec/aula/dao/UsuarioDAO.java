@@ -11,7 +11,7 @@ import br.edu.fatec.aula.dominio.EntidadeDominio;
 import br.edu.fatec.aula.dominio.PerfilAtendimento;
 import br.edu.fatec.aula.dominio.Setor;
 import br.edu.fatec.aula.dominio.Usuario;
-import br.edu.fatec.aula.util.Conexao;
+import br.edu.fatec.aula.web.util.Conexao;
 
 public class UsuarioDAO implements IDAO {
 

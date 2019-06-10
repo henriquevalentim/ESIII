@@ -7,16 +7,21 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import br.edu.fatec.aula.dominio.Cargo;
 import br.edu.fatec.aula.dominio.EntidadeDominio;
 import br.edu.fatec.aula.dominio.Funcionario;
-import br.edu.fatec.aula.dominio.Regional;
-import br.edu.fatec.aula.dominio.Setor;
-import br.edu.fatec.aula.util.Conexao;
+import br.edu.fatec.aula.dominio.PerfilAtendimento;
+import br.edu.fatec.aula.dominio.Usuario;
+import br.edu.fatec.aula.web.util.Conexao;
 
-public class FuncionarioDAO implements IDAO {
+public class FuncionarioDAO extends AbstractDAO {
+
+	public FuncionarioDAO() {
+		super("tb_funcionario", "fun_id");
+	}
 
 	private Connection connection = null;
 
@@ -28,8 +33,12 @@ public class FuncionarioDAO implements IDAO {
 
 		try {
 			connection = Conexao.getConnectionPostgres();
-
 			connection.setAutoCommit(false);
+			
+			Usuario usuario = funcionario.getUsuario();
+			UsuarioDAO usuarioDAO = new UsuarioDAO();
+			usuarioDAO.salvar(usuario);
+			
 
 			StringBuilder sql = new StringBuilder();
 			sql.append("INSERT INTO tb_funcionario(fun_nome, fun_cpf, ");
@@ -130,107 +139,98 @@ public class FuncionarioDAO implements IDAO {
 	@Override
 	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
 
-		PreparedStatement pst = null;
-	
-		Funcionario filtroFuncionario = (Funcionario) entidade;
-
-		if (filtroFuncionario.getMatricula() == null) {
-			filtroFuncionario.setMatricula("");
-		}
-		if (filtroFuncionario.getNome() == null) {
-			filtroFuncionario.setNome("");
-		}
-		if (filtroFuncionario.getCpf() == null) {
-			filtroFuncionario.setCpf("");
-		}
-		if (filtroFuncionario.getEmail() == null) {
-			filtroFuncionario.setEmail("");
-		}
+		abrirConexao();
 		
-		StringBuilder sql = new StringBuilder();
+		Funcionario funcionario =  (Funcionario) entidade;
+		PreparedStatement ps = null;
 		
-		sql.append("select emp.fun_id,emp.fun_nome,emp.fun_cpf,emp.fun_email,emp.fun_matricula,emp.fun_reg_id,");
-		sql.append("emp.fun_car_id,emp.fun_set_id from tb_funcionario emp where fun_status = true");
-
+		List<EntidadeDominio> listFuncionarios = null;
 		
-		if (filtroFuncionario.getId() != 0 && filtroFuncionario.getMatricula().equals("")) {
-			sql.append(" and emp.fun_id=?");
-		}
-		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getMatricula().equals("")) {
-			sql.append(" and emp.fun_matricula like ?");
-		}
-		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getNome().equals("")) {
-			sql.append(" and emp.fun_nome like ?");
-		}
-		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getCpf().equals("")) {
-			sql.append(" and emp.fun_cpf like ?");
-		}
-		if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getEmail().equals("")) {
-			sql.append(" and emp.fun_email like ?");
-		}
-
-		List<EntidadeDominio> funcionarios = new ArrayList<>();
+		Filtro filtro = new Filtro();
+		
+		
+		Map<Integer, Funcionario> mapFuncionario;
+		Map<Integer, Usuario> mapUsuario;
+		List<Funcionario> listFuncionario;
+		
+		String querry = filtro.gerarQuerry(funcionario);
+		
 		try {
-			connection = Conexao.getConnectionPostgres();
-
-			pst = connection.prepareStatement(sql.toString());
-			int i = 1;
-			if (filtroFuncionario.getId() != 0
-					&& filtroFuncionario.getMatricula().equals("")) {
-				pst.setInt(1, filtroFuncionario.getId());
-			} 
-			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getMatricula().equals("")) {
-				pst.setString(i++, "%" + filtroFuncionario.getMatricula() + "%");
-			}
-			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getNome().equals("")) {
-				pst.setString(i++, "%" + filtroFuncionario.getNome() + "%");
-			}
-			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getCpf().equals("")) {
-				pst.setString(i++, "%" + filtroFuncionario.getCpf() + "%");
-			}
-			if (filtroFuncionario.getId() == 0 && !filtroFuncionario.getEmail().equals("")) {
-				pst.setString(i++, "%" + filtroFuncionario.getEmail() + "%");
+			listFuncionarios = new ArrayList<EntidadeDominio>();
+			
+			ps = conexao.prepareStatement(querry);
+			ResultSet rs = ps.executeQuery();
+			
+			mapFuncionario = new HashMap<Integer, Funcionario>();
+			mapUsuario = new HashMap<Integer, Usuario>();
+			listFuncionario = new ArrayList<Funcionario>();
+			
+			while(rs.next()) {
+				
+				// Usuario desse linha
+				PerfilAtendimento perfilAten = new PerfilAtendimento();
+				perfilAten.setId(rs.getInt("usu_per_id"));
+				Usuario usuario = new Usuario();
+				usuario.setLogin(rs.getString("usu_login"));
+				usuario.setSenha(rs.getString("usu_senha"));
+				usuario.setPerfilAtendimento(perfilAten);
+				
+				// Funcionario dessa linha
+			
+				Funcionario func = new Funcionario();
+				func.setNome(rs.getString("fun_nome"));
+				func.setCpf(rs.getString("fun_cpf"));
+				func.setEmail(rs.getString("fun_email"));
+				func.setMatricula(rs.getString("fun_matricula"));
+				
+				func.setId(rs.getInt("id_cli"));
+				//func.setDtCadastro(rs.getString("dt_cadastro_cli"));
+				
+				
+				// jogando funcionario no map
+				if (mapFuncionario.get(func.getId()) == null) {
+					mapFuncionario.put(func.getId(), func);
+					listFuncionario.add(func);
+				}
+				
+				// jogando usuario no map
+				if (mapUsuario.get(func.getId()) == null)
+					mapUsuario.put(func.getId(), usuario);
+				
+				
 			}
 			
-			ResultSet rs = pst.executeQuery();
-			while (rs.next()) {
-				Funcionario funcionario = new Funcionario();
-				Cargo cargo = new Cargo();
-				Setor setor = new Setor();
-				Regional regional = new Regional();
-				funcionario.setId(rs.getInt("fun_id"));
-				funcionario.setNome(rs.getString("fun_nome"));
-				funcionario.setCpf(rs.getString("fun_cpf"));
-				funcionario.setEmail(rs.getString("fun_email"));
-				funcionario.setMatricula(rs.getString("fun_matricula"));
-
-				cargo.setId(rs.getInt("fun_car_id"));
-				setor.setId(rs.getInt("fun_set_id"));
-				regional.setId(rs.getInt("fun_reg_id"));
+			
+			for (Funcionario fun : listFuncionario) {
+				// coloquei funcionario
+				fun.setUsuario(mapUsuario.get(fun.getId()));
 				
-				//cargo.setDescricao(rs.getString("car.car_descricao"));
-				//setor.setNome(rs.getString("setor.set_nome"));
-				//regional.setNome(rs.getString("reg.reg_nome"));
-
-				funcionario.setCargo(cargo);
-				funcionario.setSetor(setor);
-				funcionario.setRegional(regional);
-
-				funcionarios.add(funcionario);
-
+				listFuncionarios.add(fun);
+				
 			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
+			
+			
+			return listFuncionarios;
+			
+			
+		} catch (SQLException e) {
 			try {
-				pst.close();
-				connection.close();
+				conexao.rollback();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		}finally {
+			try {
+				ps.close();
+				conexao.close();
 			} catch (SQLException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-
-		return funcionarios;
+		
+		return null;
 	}
 }

@@ -3,7 +3,7 @@ package br.edu.fatec.aula.test;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import br.edu.fatec.aula.util.Conexao;
+import br.edu.fatec.aula.web.util.Conexao;
 
 public class TesteConexao {
 

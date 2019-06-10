@@ -1,5 +1,5 @@
 
-package br.edu.fatec.aula.util;
+package br.edu.fatec.aula.web.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,7 +29,7 @@ public class Conexao {
 
 	}
 
-	private static Connection getConnection() throws ClassNotFoundException, SQLException {
+	public static Connection getConnection() throws ClassNotFoundException, SQLException {
 
 		Class.forName(driver);
 		Connection conn = DriverManager.getConnection(url, user, password);

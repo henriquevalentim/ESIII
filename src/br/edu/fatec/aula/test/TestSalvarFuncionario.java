@@ -1,13 +1,13 @@
 package br.edu.fatec.aula.test;
 
-import br.edu.fatec.aula.controle.Fachada;
-import br.edu.fatec.aula.controle.IFachada;
 import br.edu.fatec.aula.dominio.Cargo;
 import br.edu.fatec.aula.dominio.Funcionario;
 import br.edu.fatec.aula.dominio.PerfilAtendimento;
 import br.edu.fatec.aula.dominio.Regional;
 import br.edu.fatec.aula.dominio.Setor;
 import br.edu.fatec.aula.dominio.Usuario;
+import br.edu.fatec.aula.web.fachada.Fachada;
+import br.edu.fatec.aula.web.fachada.IFachada;
 
 public class TestSalvarFuncionario {
 

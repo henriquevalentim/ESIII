@@ -1,3 +1,4 @@
+<%@page import="br.edu.fatec.aula.dominio.Resultado"%>
 <%@page import="java.util.ArrayList"%>
 <%@page import="br.edu.fatec.aula.dominio.EntidadeDominio"%>
 <%@page import="br.edu.fatec.aula.dominio.Funcionario"%>
@@ -73,7 +74,7 @@ body {
 
 	<div class="caixa">
 
-		<form action="ControleFuncionario" method="POST">
+		<form action="SalvarFuncionario" method="POST">
 
 			<div class="form-group" id="tam">
 				<label for="txtMatricula">Matricula:</label> <br>
@@ -168,19 +169,21 @@ body {
 			</div>
 			<div class="form-group" id="botaoSalvar">
 				<input type="submit" class="btn btn-success" id="operacao"
-					name="operacao" value="SALVAR_FUNCIONARIO" /> <input type="submit"
+					name="operacao" value="SALVAR" /> <input type="submit"
 					class="btn btn-success" id="operacao" name="operacao"
-					value="BUSCAR_FUNCIONARIO" /> <input type="submit"
+					value="CONSULTAR" /> <input type="submit"
 					class="btn btn-success" id="operacao" name="operacao"
-					value="ALTERAR_FUNCIONARIO" /> <input type="submit"
+					value="ALTERAR" /> <input type="submit"
 					class="btn btn-success" id="operacao" name="operacao"
-					value="EXCLUIR_FUNCIONARIO" />
+					value="EXCLUIR" />
 			</div>
 
 			<%
-				String msg = (String) session.getAttribute("msg");
-				if (msg != null) {
-					out.print(msg);
+				Resultado msg = (Resultado) session.getAttribute("msg");
+				if (msg == null) {
+					out.print("Funcionario Salvo com sucesso.");
+				}else{
+					out.print(msg.getMsg());
 				}
 				session.removeAttribute("msg");
 			%>

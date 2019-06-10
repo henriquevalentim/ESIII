@@ -1,4 +1,4 @@
-package br.edu.fatec.aula.controle;
+package br.edu.fatec.aula.web.controle;
 
 import java.io.IOException;
 

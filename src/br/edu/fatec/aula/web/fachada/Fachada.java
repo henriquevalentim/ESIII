@@ -1,4 +1,4 @@
-package br.edu.fatec.aula.controle;
+package br.edu.fatec.aula.web.fachada;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +9,7 @@ import br.edu.fatec.aula.dao.FuncionarioDAO;
 import br.edu.fatec.aula.dao.IDAO;
 import br.edu.fatec.aula.dominio.EntidadeDominio;
 import br.edu.fatec.aula.dominio.Funcionario;
+import br.edu.fatec.aula.dominio.Resultado;
 import br.edu.fatec.aula.negocio.CompletarDtCadastro;
 import br.edu.fatec.aula.negocio.IStrategy;
 import br.edu.fatec.aula.negocio.ValidarCpf;
@@ -20,6 +21,12 @@ public class Fachada implements IFachada {
 	private Map<String, IDAO> daos;
 	private Map<String, List<IStrategy>> rns;
 	private StringBuilder sb = new StringBuilder();
+	private Resultado resultado;
+	
+	
+	String nmClasse = null;
+	
+	List<IStrategy> rng = null;
 
 	public Fachada() {
 		super();
@@ -29,37 +36,41 @@ public class Fachada implements IFachada {
 		// definindo dao para funcionario
 		daos.put(Funcionario.class.getName(), new FuncionarioDAO());
 
-		ValidarDadosFuncionario vFuncionario = new ValidarDadosFuncionario();
-		ValidarCpf vCpf = new ValidarCpf();
-		ValidarExistencia vExistencia = new ValidarExistencia();
-		CompletarDtCadastro cDtCad = new CompletarDtCadastro();
+		IStrategy vFuncionario = new ValidarDadosFuncionario();
+		IStrategy vCpf = new ValidarCpf();
+		IStrategy vExistencia = new ValidarExistencia();
+		IStrategy cDtCad = new CompletarDtCadastro();
 
 		List<IStrategy> rnsFuncionario = new ArrayList<IStrategy>();
 		rnsFuncionario.add(vFuncionario);
 		rnsFuncionario.add(vCpf);
-		rnsFuncionario.add(vExistencia);
+		//rnsFuncionario.add(vExistencia);
 		rnsFuncionario.add(cDtCad);
 
 		rns.put(Funcionario.class.getName(), rnsFuncionario);
 
 	}
 
-	public String salvar(EntidadeDominio entidade) {
+	public Resultado salvar(EntidadeDominio entidade) {
+		resultado = new Resultado();
 		sb.setLength(0);
-		String nmClasse = entidade.getClass().getName();
-
+		nmClasse = entidade.getClass().getName();
+		
 		List<IStrategy> rnsEntidade = rns.get(nmClasse);
 
 		executarRegras(entidade, rnsEntidade);
 
-		if (sb.length() == 0) {
+		if (sb.length() == 0 || sb.toString().trim().equals("")) {
 			IDAO dao = daos.get(nmClasse);
 			dao.salvar(entidade);
+			resultado.addEntidades(entidade);
 		} else {
-			return sb.toString();
+			resultado.addEntidades(entidade);
+			resultado.setMsg(sb.toString());
 		}
 
-		return null;
+		return resultado;
+
 	}
 
 	private void executarRegras(EntidadeDominio entidade, List<IStrategy> rnsEntidade) {
@@ -71,7 +82,7 @@ public class Fachada implements IFachada {
 		}
 	}
 
-	public String alterar(EntidadeDominio entidade) {
+	public Resultado alterar(EntidadeDominio entidade) {
 		sb.setLength(0);
 		String nmClasse = entidade.getClass().getName();
 
@@ -82,14 +93,16 @@ public class Fachada implements IFachada {
 		if (sb.length() == 0) {
 			IDAO dao = daos.get(nmClasse);
 			dao.alterar(entidade);
+			resultado.addEntidades(entidade);
 		} else {
-			return sb.toString();
+			resultado.setMsg(sb.toString());
+			return resultado;
 		}
 
 		return null;
 	}
 
-	public String excluir(EntidadeDominio entidade) {
+	public Resultado excluir(EntidadeDominio entidade) {
 
 		Funcionario funcionario = (Funcionario) entidade;
 		StringBuilder sb = new StringBuilder();
@@ -98,21 +111,18 @@ public class Fachada implements IFachada {
 			// cliente.complementarDtCadastro();
 			IDAO dao = new FuncionarioDAO();
 			dao.excluir(funcionario);
-			return "Funcionario EXCLUIDO COM SUCESSO!\n";
+			resultado.addEntidades(entidade);
+		} else {
+			resultado.setMsg(sb.toString());
+			return resultado;
 		}
 
-		return sb.toString();
-	}
-
-	public List<EntidadeDominio> consultar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
-	private void validaNull(StringBuilder sb, String msg) {
-		if (msg != null) {
-			sb.append(msg);
-		}
+	public Resultado consultar(EntidadeDominio entidade) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

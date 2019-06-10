@@ -11,7 +11,7 @@ import br.edu.fatec.aula.dominio.Cargo;
 import br.edu.fatec.aula.dominio.EntidadeDominio;
 import br.edu.fatec.aula.dominio.Funcionario;
 import br.edu.fatec.aula.dominio.Regional;
-import br.edu.fatec.aula.util.Conexao;
+import br.edu.fatec.aula.web.util.Conexao;
 
 public class RegionalDAO implements IDAO {
 
