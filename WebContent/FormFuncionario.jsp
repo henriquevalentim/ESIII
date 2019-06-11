@@ -2,6 +2,7 @@
 <%@page import="java.util.ArrayList"%>
 <%@page import="br.edu.fatec.aula.dominio.EntidadeDominio"%>
 <%@page import="br.edu.fatec.aula.dominio.Funcionario"%>
+<%@page import="br.edu.fatec.aula.dominio.Usuario"%>
 <%@page import="java.util.List"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
 	pageEncoding="ISO-8859-1"%>
@@ -38,7 +39,7 @@ body {
 	border: 2px none;
 	border-radius: 15px;
 	padding-top: 10px;
-	height: 600px;
+	height: auto;
 	background-color: #FFFFFF;
 }
 
@@ -46,7 +47,6 @@ body {
 	width: 250px;
 	height: 80px;
 	margin-left: 20px;
-	/* background-color: red; */
 	position: relative;
 	display: inline-block;
 }
@@ -54,7 +54,6 @@ body {
 #botaoSalvar {
 	width: 600px;
 	height: 100px;
-	/* 	background-color: blue; */
 	margin-left: 200px;
 }
 
@@ -67,14 +66,14 @@ body {
 </head>
 
 <%
-	Funcionario funcionario = (Funcionario) request.getAttribute("funcionario");
+	Funcionario funcionario = (Funcionario) request.getSession().getAttribute("funcionario");
 %>
 
 <body>
 
 	<div class="caixa">
 
-		<form action="SalvarFuncionario" method="POST">
+		<form action="ControleFuncionario" method="POST">
 
 			<div class="form-group" id="tam">
 				<label for="txtMatricula">Matricula:</label> <br>
@@ -132,8 +131,7 @@ body {
 			</div>
 
 			<div class="form-group" id="tam">
-				<label for="txtCargo">Cargo:</label> <br> 
-				<select id="txtCargo"
+				<label for="txtCargo">Cargo:</label> <br> <select id="txtCargo"
 					name="txtCargo">
 					<option value=""></option>
 					<option value="1">Desenvolvedor</option>
@@ -142,6 +140,18 @@ body {
 					<option value="4">Aprendiz</option>
 					<option value="5">Engenheiro</option>
 					<option value="6">Assistente</option>
+				</select> <br />
+			</div>
+
+			<div class="form-group" id="tam">
+				<label for="txtPerfil">Perfil de Atendimento:</label> <br> <select
+					id="txtPerfil" name="txtPerfil">
+					<option value=""></option>
+					<option value="1">Admistrador de Sistema</option>
+					<option value="2">Atendente</option>
+					<option value="3">Triagem Inicial</option>
+					<option value="4">Triagem de Grupo</option>
+					<option value="5">Administrador</option>
 				</select> <br />
 			</div>
 
@@ -167,75 +177,97 @@ body {
 					<option value="5">Sul</option>
 				</select> <br />
 			</div>
+
+			<%
+				Usuario usuarioAuten = (Usuario) request.getSession().getAttribute("usuarioAutenticado");
+			%>
+
+			<input type='hidden' id='txtCadastradoPor' name='txtCadastradoPor'
+				value="<%=usuarioAuten.getId()%>">
+
+			<%
+				if (funcionario != null) {
+					out.print("<input type='text' id='txtIdFuncionario' name='txtIdFuncionario' value='");
+					if (funcionario.getId() > 0)
+						out.print("'" + funcionario.getId() + "'>");
+					else
+						out.print(" ><br>");
+				}
+			%>
+
+
 			<div class="form-group" id="botaoSalvar">
 				<input type="submit" class="btn btn-success" id="operacao"
 					name="operacao" value="SALVAR" /> <input type="submit"
 					class="btn btn-success" id="operacao" name="operacao"
-					value="CONSULTAR" /> <input type="submit"
-					class="btn btn-success" id="operacao" name="operacao"
-					value="ALTERAR" /> <input type="submit"
-					class="btn btn-success" id="operacao" name="operacao"
+					value="CONSULTAR" /> <input type="submit" class="btn btn-success"
+					id="operacao" name="operacao" value="ALTERAR" /> <input
+					type="submit" class="btn btn-success" id="operacao" name="operacao"
 					value="EXCLUIR" />
 			</div>
 
 			<%
-				Resultado msg = (Resultado) session.getAttribute("msg");
-				if (msg == null) {
-					out.print("Funcionario Salvo com sucesso.");
-				}else{
-					out.print(msg.getMsg());
+				request.getSession().removeAttribute("funcionario");
+				Resultado resultado = (Resultado) request.getSession().getAttribute("resultado");
+				if (resultado != null) {
+					out.print(resultado.getMsg());
+					request.getSession().removeAttribute("resultado");
 				}
-				session.removeAttribute("msg");
 			%>
 		</form>
-	</div>
-
-
-	<TABLE BORDER="5" WIDTH="50%" CELLPADDING="4" CELLSPACING="3">
-		<TR>
-			<TH COLSPAN="3"><BR>
-				<H3>FUNCIONARIOS</H3></TH>
-		</TR>
-
-		<TR>
-			<TH>MATRICULA:</TH>
-			<TH>NOME</TH>
-			<TH>CPF:</TH>
-			<TH>EMAIL:</TH>
-			<TH>ACTION:</TH>
-		</TR>
 
 		<%
-			List<EntidadeDominio> entidades = (List<EntidadeDominio>) request.getAttribute("resultado");
-
-			if (entidades != null) {
-				StringBuilder sbRegistro = new StringBuilder();
-				StringBuilder sbLink = new StringBuilder();
-
-				for (int i = 0; i < entidades.size(); i++) {
-					Funcionario p = (Funcionario) entidades.get(i);
+			if (resultado != null) {
 		%>
 
-		<TR ALIGN='CENTER'>
-			<td><%=p.getMatricula()%></td>
-			<td><%=p.getNome()%></td>
-			<td><%=p.getCpf()%></td>
-			<td><%=p.getEmail()%></td>
+		<TABLE BORDER="5" WIDTH="50%" CELLPADDING="4" CELLSPACING="3">
+			<TR>
+				<TH COLSPAN="3"><BR>
+					<H3>FUNCIONARIOS</H3></TH>
+			</TR>
 
-			<td>
-				<div class="icon">
-					<a href="ControleFuncionario?id=<%=p.getId()%>&op=ed"><i
-						class="material-icons" style="color: green;">create</i></a>
-				</div>
-				<div class="icon">
-					<a href="ControleFuncionario?id=<%=p.getId()%>&op=ex"><i class="material-icons" style="color: green;">clear</i></a>
-				</div>
-			</td>
-		</TR>
-		<%
-			}
-			}
-		%>
-	
+			<TR>
+				<TH>MATRICULA:</TH>
+				<TH>NOME</TH>
+				<TH>CPF:</TH>
+				<TH>EMAIL:</TH>
+				<TH>CARGO:</TH>
+				<TH>SETOR:</TH>
+				<TH>REGIONAL:</TH>
+				<TH>ACTION:</TH>
+			</TR>
+
+			<%
+				if (resultado != null) {
+						for (int i = 0; i < resultado.getEntidades().size(); i++) {
+							Funcionario p = (Funcionario) resultado.getEntidades().get(i);
+			%>
+
+			<TR ALIGN='CENTER'>
+				<td><%=p.getMatricula()%></td>
+				<td><%=p.getNome()%></td>
+				<td><%=p.getCpf()%></td>
+				<td><%=p.getEmail()%></td>
+				<td><%=p.getCargo().getDescricao()%></td>
+				<td><%=p.getSetor().getNome()%></td>
+				<td><%=p.getRegional().getNome()%></td>
+
+				<td>
+					<div class="icon">
+						<a href="ControleFuncionario?id=<%=p.getId()%>&operacao=PERFIL"><i
+							class="material-icons" style="color: green;">eject</i></a>
+					</div>
+					<div class="icon">
+						<a href="ControleFuncionario?id=<%=p.getId()%>&op=ex"><i
+							class="material-icons" style="color: green;">clear</i></a>
+					</div>
+				</td>
+			</TR>
+			<%
+				}
+					}
+				}
+			%>
+			</div>
 </body>
 </html>

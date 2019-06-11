@@ -11,6 +11,19 @@ public class Funcionario extends EntidadeDominio {
 	private String senha;
 	private Regional regional;
 	private Cargo cargo;
+	private Setor setor;
+	private Usuario usuario;
+	private String dtContratacao;
+	private int cadastradoPor;
+	
+	public int getCadastradoPor() {
+		return cadastradoPor;
+	}
+
+	public void setCadastradoPor(int cadastradoPor) {
+		this.cadastradoPor = cadastradoPor;
+	}
+
 	
 	public String getDtContratacao() {
 		return dtContratacao;
@@ -20,9 +33,6 @@ public class Funcionario extends EntidadeDominio {
 		this.dtContratacao = dtContratacao;
 	}
 
-	private Setor setor;
-	private Usuario usuario;
-	private String dtContratacao;
 
 	public Funcionario(String nome, String cpf, String email, String matricula, Cargo cargo,Regional regional,Usuario usuario,Setor setor) {
 		super();

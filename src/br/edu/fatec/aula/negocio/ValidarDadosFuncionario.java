@@ -11,27 +11,42 @@ public class ValidarDadosFuncionario extends AbstractValidador {
 		Funcionario funcionario = (Funcionario) entidade;
 
 		if (funcionario.getNome() == null || funcionario.getNome().trim().equals("")) {
-			sb.append("NOME É UM CAMPO OBRIGATÓRIO!\n");
+			sb.append("NOME É UM CAMPO OBRIGATÓRIO!<br>");
 		}
 
 		if (funcionario.getCpf() == null || funcionario.getCpf().trim().equals("")) {
-			sb.append("CPF É UM CAMPO OBRIGATÓRIO!\n");
+			sb.append("CPF É UM CAMPO OBRIGATÓRIO!<br>");
 		}
 
 		if (funcionario.getEmail() == null || funcionario.getEmail().trim().equals("")) {
-			sb.append("EMAIL É UM CAMPO OBRIGATÓRIO!\n");
+			sb.append("EMAIL É UM CAMPO OBRIGATÓRIO!<br>");
 		}
 
 		if (funcionario.getMatricula() == null || funcionario.getMatricula().trim().equals("")) {
-			sb.append("MATRICULA É UM CAMPO OBRIGATÓRIO!\n");
+			sb.append("MATRICULA É UM CAMPO OBRIGATÓRIO!<br>");
+		}
+		
+		if (funcionario.getSenha() == null || funcionario.getSenha().trim().equals("")) {
+			sb.append("SENHA É UM CAMPO OBRIGATÓRIO!<br>");
+		}
+		
+		if (funcionario.getCargo().getId() == 0) {
+			sb.append("CARGO É UM CAMPO OBRIGATÓRIO!<br>");
+		}
+		
+		if (funcionario.getSetor().getId() == 0) {
+			sb.append("SETOR É UM CAMPO OBRIGATÓRIO!<br>");
+		}
+		
+		if (funcionario.getRegional().getId() == 0) {
+			sb.append("REGIONAL É UM CAMPO OBRIGATÓRIO!<br>");
+		}
+		
+		if (funcionario.getUsuario().getPerfilAtendimento().getId() == 0) {
+			sb.append("PERFIL DE ATENDIMENTO É UM CAMPO OBRIGATÓRIO!<br>");
 		}
 
-		// validar as outras classes aki(Cargo,Regional,etc...)
-		//importante validar apenas as existencias dos elementos
-		//validaçoes para verificar se o valor é valido deve ser feito
-		//depois para separar melhor a responsabilidade do codigo
-
-		return verificaMsg();
+		return sb.toString();
 
 	}
 

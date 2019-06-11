@@ -6,59 +6,39 @@ import java.util.List;
 import java.util.Map;
 
 import br.edu.fatec.aula.dominio.Funcionario;
-import br.edu.fatec.aula.dominio.Usuario;
 
 public class Filtro {
 
 	private String querry;
-	private Map<String, String> mapNomeTabela;
 	private Map<Integer, String> mapFiltroQuerry;
 	private List<Integer> listQuerryFuncionario;
-	private List<Integer> listQuerryUsuario;
-	// private List<Integer> listQuerryEndereco;
 
-	// private boolean flgEndereco = false;
-	private boolean flgUsuario = false;
 	private boolean flgFuncionario = false;
 
 	public Filtro() {
-
-		mapNomeTabela = new HashMap<String, String>();
-		mapNomeTabela.put(Funcionario.class.getName(), "tb_funcionario");
-		mapNomeTabela.put(Usuario.class.getName(), "tb_usuario");
 
 	}
 
 	public String gerarQuerry(Funcionario funcionario) {
 
-		querry = "SELECT * FROM tb_funcionario as F";
+		querry = "SELECT * FROM tb_funcionario as F,tb_cargo as C,tb_regional as R,tb_setor as S";
 
 		mapFiltroQuerry = new HashMap<Integer, String>();
 
-		String selectUsuario = null;
-
-		if (funcionario.getUsuario() != null)
-			selectUsuario = querryUsuario(funcionario.getUsuario());
-
-		if (flgUsuario)
-			querry += selectUsuario;
-		else
-			querry += ", tb_usuario as U";
-
 		String selectFuncionario = querryFuncionario(funcionario);
-		if (flgFuncionario)
-			querry += " WHERE " + selectFuncionario + " AND F.fun_usu_id = U.usu_id";
-
-		else if (!flgFuncionario)
-			querry += " WHERE  F.fun_usu_id = U.usu_id";
-
+		if (flgFuncionario) {
+			querry += " WHERE " + selectFuncionario + " AND F.fun_car_id = C.car_id AND ";
+			querry += "F.fun_reg_id = R.reg_id AND F.fun_set_id = S.set_id;";
+		} else if (!flgFuncionario) {
+			querry += " WHERE F.fun_car_id = C.car_id AND F.fun_reg_id = R.reg_id AND F.fun_set_id = S.set_id;";
+		}
 		System.out.println(querry);
 		return querry;
 
 	}
 
-
 	private String querryFuncionario(Funcionario funcionario) {
+
 		boolean flgWhere = false;
 		String selectFuncionario = "";
 		listQuerryFuncionario = new ArrayList<Integer>();
@@ -91,7 +71,7 @@ public class Filtro {
 
 		// email
 		if (funcionario.getEmail() != null) {
-			if (!funcionario.getCpf().trim().equals("")) {
+			if (!funcionario.getEmail().trim().equals("")) {
 				mapFiltroQuerry.put(3, "fun_email LIKE '%" + funcionario.getEmail() + "%'");
 				listQuerryFuncionario.add(3);
 				flgWhere = true;
@@ -104,6 +84,36 @@ public class Filtro {
 			if (!funcionario.getMatricula().trim().equals("")) {
 				mapFiltroQuerry.put(4, "fun_matricula LIKE '%" + funcionario.getMatricula() + "%'");
 				listQuerryFuncionario.add(4);
+				flgWhere = true;
+				flgFuncionario = true;
+			}
+		}
+
+		// cargo
+		if (funcionario.getCargo() != null) {
+			if (funcionario.getCargo().getId() > 0) {
+				mapFiltroQuerry.put(5, "fun_car_id = " + funcionario.getCargo().getId());
+				listQuerryFuncionario.add(5);
+				flgWhere = true;
+				flgFuncionario = true;
+			}
+		}
+
+		// setor
+		if (funcionario.getSetor() != null) {
+			if (funcionario.getSetor().getId() > 0) {
+				mapFiltroQuerry.put(6, "fun_set_id = " + funcionario.getSetor().getId());
+				listQuerryFuncionario.add(6);
+				flgWhere = true;
+				flgFuncionario = true;
+			}
+		}
+		
+		// regional
+		if (funcionario.getRegional() != null) {
+			if (funcionario.getRegional().getId() > 0) {
+				mapFiltroQuerry.put(7, "fun_reg_id = " + funcionario.getRegional().getId());
+				listQuerryFuncionario.add(7);
 				flgWhere = true;
 				flgFuncionario = true;
 			}
@@ -123,50 +133,12 @@ public class Filtro {
 
 	}
 
-	private String querryUsuario(Usuario usuario) {
-		boolean flgWhere = false;
-		String selectUsuario = ", (SELECT * FROM tb_usuario";
-
-		listQuerryUsuario = new ArrayList<Integer>();
-
-		// USUARIO
-		if (usuario != null) {
-			if (usuario.getLogin() != null) {
-				if (!usuario.getLogin().trim().equals("")) {
-					mapFiltroQuerry.put(22, "usuario_usu LIKE '%" + usuario.getLogin() + "%'");
-					listQuerryUsuario.add(22);
-					flgWhere = true;
-					flgUsuario = true;
-				}
-			}
-
-			// ativo
-			/*
-			 * if(usuario.isAtivoInativo()) { mapFiltroQuerry.put(23,
-			 * "ativo_inativo_usu = true"); listQuerryUsuario.add(23); flgWhere = true;
-			 * flgUsuario = true; } else { mapFiltroQuerry.put(23,
-			 * "ativo_inativo_usu = false"); listQuerryUsuario.add(23); flgWhere = true;
-			 * flgUsuario = true;
-			 * 
-			 * }
-			 */
-
-			if (flgWhere) {
-				selectUsuario += " WHERE ";
-				for (Integer i : listQuerryUsuario) {
-					if (i != listQuerryUsuario.get(0))
-						selectUsuario += " AND ";
-					selectUsuario += mapFiltroQuerry.get(i);
-				}
-
-			}
-
-			selectUsuario += ") AS U";
-			return selectUsuario;
-		}
-
-		return null;
-
-	}
+//	private String querryCargo(Cargo cargo) {
+//		boolean flgWhere = false;
+//		flgCargo = true;
+//		String selectCargo = ",tb_cargo as C";
+//
+//		return selectCargo;
+//	}
 
 }

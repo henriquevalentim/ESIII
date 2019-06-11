@@ -38,8 +38,7 @@ public class Autenticacao extends HttpServlet {
 		usuarioAutenticado = (Usuario)usuarioDAO.autenticar(usuario);
 		
 		if(usuarioAutenticado != null) {
-			HttpSession sessao = request.getSession();
-			sessao.setAttribute("usuarioAutenticado", usuarioAutenticado);
+			request.getSession().setAttribute("usuarioAutenticado", usuarioAutenticado);
 			
 			request.getRequestDispatcher("FormFuncionario.jsp").forward(request,response);
 		}else {

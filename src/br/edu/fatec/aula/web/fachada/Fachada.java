@@ -21,11 +21,12 @@ public class Fachada implements IFachada {
 	private Map<String, IDAO> daos;
 	private Map<String, List<IStrategy>> rns;
 	private StringBuilder sb = new StringBuilder();
-	private Resultado resultado;
-	
-	
+	Resultado resultado;
+
+	IDAO dao = null;
+
 	String nmClasse = null;
-	
+
 	List<IStrategy> rng = null;
 
 	public Fachada() {
@@ -44,7 +45,7 @@ public class Fachada implements IFachada {
 		List<IStrategy> rnsFuncionario = new ArrayList<IStrategy>();
 		rnsFuncionario.add(vFuncionario);
 		rnsFuncionario.add(vCpf);
-		//rnsFuncionario.add(vExistencia);
+		// rnsFuncionario.add(vExistencia);
 		rnsFuncionario.add(cDtCad);
 
 		rns.put(Funcionario.class.getName(), rnsFuncionario);
@@ -52,19 +53,30 @@ public class Fachada implements IFachada {
 	}
 
 	public Resultado salvar(EntidadeDominio entidade) {
-		resultado = new Resultado();
-		sb.setLength(0);
-		nmClasse = entidade.getClass().getName();
-		
-		List<IStrategy> rnsEntidade = rns.get(nmClasse);
 
-		executarRegras(entidade, rnsEntidade);
+		resultado = new Resultado();
+		nmClasse = entidade.getClass().getName();
+		rng = rns.get(nmClasse);
+		sb.setLength(0);
+
+		executarRegras(rng, entidade);
+
+		if (nmClasse == Funcionario.class.getName()) {
+			Funcionario funcionario = (Funcionario) entidade;
+		}
 
 		if (sb.length() == 0 || sb.toString().trim().equals("")) {
-			IDAO dao = daos.get(nmClasse);
-			dao.salvar(entidade);
-			resultado.addEntidades(entidade);
+			try {
+				dao = daos.get(nmClasse);
+				System.out.println("To no dao indo salvar no DAOCliente");
+				dao.salvar(entidade);
+				resultado.addEntidades(entidade);
+			} catch (Exception e) {
+				e.printStackTrace();
+				resultado.setMsg("Não foi possível Salvar...");
+			}
 		} else {
+
 			resultado.addEntidades(entidade);
 			resultado.setMsg(sb.toString());
 		}
@@ -73,56 +85,85 @@ public class Fachada implements IFachada {
 
 	}
 
-	private void executarRegras(EntidadeDominio entidade, List<IStrategy> rnsEntidade) {
-		for (IStrategy rn : rnsEntidade) {
-			String msg = rn.processar(entidade);
+	private void executarRegras(List<IStrategy> rngEntidade, EntidadeDominio entidade) {
+		String msg = "";
+		for (IStrategy strategy : rngEntidade) {
+			msg = strategy.processar(entidade);
 			if (msg != null) {
-				sb.append(msg);
+				sb.append(msg + "\n");
+				System.out.println(msg);
 			}
 		}
 	}
 
 	public Resultado alterar(EntidadeDominio entidade) {
+		resultado = new Resultado();
 		sb.setLength(0);
-		String nmClasse = entidade.getClass().getName();
 
-		List<IStrategy> rnsEntidade = rns.get(nmClasse);
+		nmClasse = entidade.getClass().getName();
 
-		executarRegras(entidade, rnsEntidade);
+		executarRegras(rns.get(nmClasse), entidade);
 
-		if (sb.length() == 0) {
-			IDAO dao = daos.get(nmClasse);
-			dao.alterar(entidade);
-			resultado.addEntidades(entidade);
-		} else {
-			resultado.setMsg(sb.toString());
-			return resultado;
+		// verificar se é um cliente pq cliente tem q verificar alem dos dados dele
+		// tem q validar os dados de end e usu
+		if (nmClasse == Funcionario.class.getName()) {
+			Funcionario funcionario = (Funcionario) entidade;
+
 		}
 
-		return null;
+		if (sb.toString().trim().equals("")) {
+			try {
+				dao = daos.get(nmClasse);
+				dao.alterar(entidade);
+				resultado.addEntidades(entidade);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resultado.setMsg(sb + "\nNão foi possível alterar...");
+			}
+		} else {
+			resultado.setMsg(sb.toString());
+			resultado.addEntidades(entidade);
+		}
+
+		return resultado;
+
 	}
 
 	public Resultado excluir(EntidadeDominio entidade) {
 
-		Funcionario funcionario = (Funcionario) entidade;
-		StringBuilder sb = new StringBuilder();
+		String nmClasse = entidade.getClass().getName();
 
-		if (sb.length() == 0) {
-			// cliente.complementarDtCadastro();
-			IDAO dao = new FuncionarioDAO();
-			dao.excluir(funcionario);
+		resultado = new Resultado();
+
+		dao = daos.get(nmClasse);
+
+		try {
+			dao.excluir(entidade);
 			resultado.addEntidades(entidade);
-		} else {
-			resultado.setMsg(sb.toString());
-			return resultado;
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultado.setMsg("Não foi possível Excluir...");
 		}
 
-		return null;
+		return resultado;
 	}
 
 	public Resultado consultar(EntidadeDominio entidade) {
-		// TODO Auto-generated method stub
-		return null;
+		sb.setLength(0);
+		resultado = new Resultado();
+		
+		nmClasse = entidade.getClass().getName();
+		
+		dao = daos.get(nmClasse);
+		try {
+			resultado.setEntidades(dao.consultar(entidade));
+		}catch(Exception e) {
+			e.printStackTrace();
+			resultado.setMsg("Não foi possível realizar a consulta...");
+		}
+		return resultado;
 	}
 
 }

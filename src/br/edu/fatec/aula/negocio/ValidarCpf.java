@@ -23,7 +23,7 @@ public class ValidarCpf implements IStrategy{
 				funcionario.getCpf().equals("88888888888") || 
 				funcionario.getCpf().equals("99999999999") ||
 	            (funcionario.getCpf().length() != 11))
-	            return("CPF INVALIDO");
+	            return("CPF INVALIDO<br>");
 	          
 	        char dig10, dig11;
 	        int sm, i, r, num, peso;
@@ -64,9 +64,9 @@ public class ValidarCpf implements IStrategy{
 	        // Verifica se os digitos calculados conferem com os digitos informados.
 	            if ((dig10 == funcionario.getCpf().charAt(9)) && (dig11 == funcionario.getCpf().charAt(10)))
 	                 return null;
-	            else return("CPF INVALIDO");
+	            else return("CPF INVALIDO<br>");
 	                } catch (InputMismatchException erro) {
-	                return("CPF INVALIDO");
+	                return("CPF INVALIDO<br>");
 	            }
 		
 	}

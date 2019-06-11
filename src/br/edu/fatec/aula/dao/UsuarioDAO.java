@@ -38,7 +38,7 @@ public class UsuarioDAO implements IDAO {
 			}
 			connection.setAutoCommit(false);
 			
-			PerfilAtendimentoDAO perfilUsuarioDAO = new PerfilAtendimentoDAO(connection);
+			//PerfilAtendimentoDAO perfilUsuarioDAO = new PerfilAtendimentoDAO(connection);
 			//usuario.setPerfilAtendimento((PerfilAtendimento) perfilUsuarioDAO.consultarExistencia(usuario.getPerfilAtendimento()));
 			
 			StringBuilder sql = new StringBuilder();

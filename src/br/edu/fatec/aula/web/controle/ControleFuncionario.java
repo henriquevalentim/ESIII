@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import br.edu.fatec.aula.command.AlterarCommand;
 import br.edu.fatec.aula.command.ConsultarCommand;
@@ -21,7 +22,7 @@ import br.edu.fatec.aula.web.vh.FuncionarioVH;
 import br.edu.fatec.aula.web.vh.IViewHelper;
 
 //,"/AlterarFuncionario","/ExcluirFuncionario","/ConsultarFuncionario" 
-@WebServlet(urlPatterns = { "/SalvarFuncionario" })
+@WebServlet(urlPatterns = { "/SalvarFuncionario","/ControleFuncionario","/ConsultarFuncionario" })
 public class ControleFuncionario extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -36,13 +37,18 @@ public class ControleFuncionario extends HttpServlet {
 		commands.put("ALTERAR", new AlterarCommand());
 		commands.put("EXCLUIR", new ExcluirCommand());
 		commands.put("CONSULTAR", new ConsultarCommand());
+		commands.put("PERFIL", new ConsultarCommand());
+		
+		//PERFIL
 
 		vhs = new HashMap<String, IViewHelper>();
 
+		vhs.put("/TrabESIII/ControleFuncionario", new FuncionarioVH());
 		vhs.put("/TrabESIII/SalvarFuncionario", new FuncionarioVH());
 		vhs.put("/TrabESIII/AlterarFuncionario", new FuncionarioVH());
 		vhs.put("/TrabESIII/ExcluirFuncionario", new FuncionarioVH());
 		vhs.put("/TrabESIII/ConsultarFuncionario", new FuncionarioVH());
+		vhs.put("/TrabESIII/PerfilFuncionario", new FuncionarioVH());
 
 	}
 
@@ -71,6 +77,9 @@ public class ControleFuncionario extends HttpServlet {
 		command = commands.get(operacao);
 		System.out.println("vou add o resultado");
 		resultado = command.executar(entidade);
+		
+		HttpSession sessao = request.getSession();
+		sessao.setAttribute("resultado", resultado);
 
 		System.out.println("setView");
 		vh.setView(resultado, request, response);
