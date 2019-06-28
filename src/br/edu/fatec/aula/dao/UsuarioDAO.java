@@ -38,17 +38,14 @@ public class UsuarioDAO implements IDAO {
 			}
 			connection.setAutoCommit(false);
 			
-			//PerfilAtendimentoDAO perfilUsuarioDAO = new PerfilAtendimentoDAO(connection);
-			//usuario.setPerfilAtendimento((PerfilAtendimento) perfilUsuarioDAO.consultarExistencia(usuario.getPerfilAtendimento()));
-			
 			StringBuilder sql = new StringBuilder();
-			sql.append("INSERT INTO tb_usuario(usu_login,usu_senha,usu_per_id) VALUES (?,?,?) ");
+			sql.append("INSERT INTO tb_usuario(usu_login,usu_senha) VALUES (?,?) ");
 			pst = connection.prepareStatement(sql.toString(), 
 					Statement.RETURN_GENERATED_KEYS);
 			
 			pst.setString(1, usuario.getLogin());
 			pst.setString(2, usuario.getSenha());
-			pst.setInt(3, usuario.getPerfilAtendimento().getId());
+			//pst.setInt(3, usuario.getPerfilAtendimento().getId());
 			
 			pst.executeUpdate();		
 					

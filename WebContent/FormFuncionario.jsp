@@ -22,6 +22,21 @@
 	integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
 	crossorigin="anonymous"></script>
 
+<script>
+	function validarSenha() {
+
+		var senha1 = document.getElementsByName('txtSenha')[0].value;
+		var senha2 = document.getElementsByName('txtSenha1')[0].value;
+		if (senha1 != senha2) {
+			alert("SENHAS DIFERENTES!\\nFAVOR DIGITAR SENHAS IGUAIS");
+			return false;
+		}
+		return true;
+
+	}
+</script>
+
+
 <style>
 body {
 	background-color: #0080FF;
@@ -29,6 +44,20 @@ body {
 	margin-right: 5%;
 	margin-top: 20px;
 	margin-bottom: 30px;
+}
+
+.limpar {
+	margin-left: 90%;
+	margin-top: -380px;
+	width: 100px;
+	height: 40px;
+	width: 100px;
+}
+
+.msgErro {
+	height: 40px;
+	width: 300px;
+	margin-top: 300px;
 }
 
 .centro {
@@ -39,7 +68,7 @@ body {
 	border: 2px none;
 	border-radius: 15px;
 	padding-top: 10px;
-	height: auto;
+	height: 1500px;
 	background-color: #FFFFFF;
 }
 
@@ -73,7 +102,8 @@ body {
 
 	<div class="caixa">
 
-		<form action="ControleFuncionario" method="POST">
+		<form action="ControleFuncionario" method="POST"
+			onsubmit="return validarSenha();">
 
 			<div class="form-group" id="tam">
 				<label for="txtMatricula">Matricula:</label> <br>
@@ -130,10 +160,30 @@ body {
 				%>
 			</div>
 
+
+			<div class="form-group" id="tam">
+				<label for="txtSenha">Confirmar Senha:</label><br>
+				<%
+					out.print("<input type='password' id='txtSenha1' name='txtSenha1' value=");
+					if (funcionario != null)
+						out.print("'" + funcionario.getSenha() + "' /><br>");
+					else
+						out.print(" ><br>");
+				%>
+			</div>
 			<div class="form-group" id="tam">
 				<label for="txtCargo">Cargo:</label> <br> <select id="txtCargo"
 					name="txtCargo">
-					<option value=""></option>
+
+					<%
+						out.print("<option value=");
+						if (funcionario != null) {
+							out.print("'" + funcionario.getCargo().getId() + "'>" + funcionario.getCargo().getDescricao()
+									+ "</option>");
+						} else {
+							out.print("''></option>");
+						}
+					%>
 					<option value="1">Desenvolvedor</option>
 					<option value="2">Administrador</option>
 					<option value="3">Analista</option>
@@ -143,22 +193,18 @@ body {
 				</select> <br />
 			</div>
 
-			<div class="form-group" id="tam">
-				<label for="txtPerfil">Perfil de Atendimento:</label> <br> <select
-					id="txtPerfil" name="txtPerfil">
-					<option value=""></option>
-					<option value="1">Admistrador de Sistema</option>
-					<option value="2">Atendente</option>
-					<option value="3">Triagem Inicial</option>
-					<option value="4">Triagem de Grupo</option>
-					<option value="5">Administrador</option>
-				</select> <br />
-			</div>
 
 			<div class="form-group" id="tam">
 				<label for="txtSetor">Setor:</label> <br> <select id="txtSetor"
 					name="txtSetor">
-					<option value=""></option>
+					<%
+						out.print("<option value=");
+						if (funcionario != null) {
+							out.print("'" + funcionario.getSetor().getId() + "'>" + funcionario.getSetor().getNome() + "</option>");
+						} else {
+							out.print("''></option>");
+						}
+					%>
 					<option value="1">Desenvolvimento</option>
 					<option value="2">Teste</option>
 					<option value="3">Engenharia</option>
@@ -169,7 +215,15 @@ body {
 			<div class="form-group" id="tam">
 				<label for="txtRegional">Regional:</label></br> <select id="txtRegional"
 					name="txtRegional">
-					<option value=""></option>
+					<%
+						out.print("<option value=");
+						if (funcionario != null) {
+							out.print("'" + funcionario.getRegional().getId() + "'>" + funcionario.getRegional().getNome()
+									+ "</option>");
+						} else {
+							out.print("''></option>");
+						}
+					%>
 					<option value="1">Norte</option>
 					<option value="2">Nordeste</option>
 					<option value="3">Centro-Oeste</option>
@@ -182,12 +236,14 @@ body {
 				Usuario usuarioAuten = (Usuario) request.getSession().getAttribute("usuarioAutenticado");
 			%>
 
+
 			<input type='hidden' id='txtCadastradoPor' name='txtCadastradoPor'
-				value="<%=usuarioAuten.getId()%>">
+				value="<%=1%>">
+
 
 			<%
 				if (funcionario != null) {
-					out.print("<input type='text' id='txtIdFuncionario' name='txtIdFuncionario' value='");
+					out.print("<input type='hidden' id='txtIdFuncionario' name='txtIdFuncionario' value=");
 					if (funcionario.getId() > 0)
 						out.print("'" + funcionario.getId() + "'>");
 					else
@@ -198,29 +254,37 @@ body {
 
 			<div class="form-group" id="botaoSalvar">
 				<input type="submit" class="btn btn-success" id="operacao"
-					name="operacao" value="SALVAR" /> <input type="submit"
-					class="btn btn-success" id="operacao" name="operacao"
+					name="operacao" onclick="ConfirmaSenha()" value="SALVAR" /> <input
+					type="submit" class="btn btn-success" id="operacao" name="operacao"
 					value="CONSULTAR" /> <input type="submit" class="btn btn-success"
 					id="operacao" name="operacao" value="ALTERAR" /> <input
 					type="submit" class="btn btn-success" id="operacao" name="operacao"
 					value="EXCLUIR" />
 			</div>
+			<div class="limpar">
+				<a href="FormFuncionario.jsp">LIMPAR</a>
+			</div>
+			<div class="msgErro">
 
-			<%
-				request.getSession().removeAttribute("funcionario");
-				Resultado resultado = (Resultado) request.getSession().getAttribute("resultado");
-				if (resultado != null) {
-					out.print(resultado.getMsg());
-					request.getSession().removeAttribute("resultado");
-				}
-			%>
+				<%
+					request.getSession().removeAttribute("funcionario");
+					Resultado resultado = (Resultado) request.getSession().getAttribute("resultado");
+					if (resultado != null) {
+						out.print(resultado.getMsg());
+						//request.getSession().removeAttribute("resultado");
+					}
+				%>
+			</div>
 		</form>
 
 		<%
-			if (resultado != null) {
+			if (request.getSession().getAttribute("resultado") != null) {
+				Funcionario fun = (Funcionario) resultado.getEntidades().get(0);
+				if (fun.getCargo().getDescricao() != null) {
 		%>
 
-		<TABLE BORDER="5" WIDTH="50%" CELLPADDING="4" CELLSPACING="3">
+		<TABLE BORDER="5" WIDTH="50%" CELLPADDING="4" CELLSPACING="3"
+			style="margin-top: 50px;">
 			<TR>
 				<TH COLSPAN="3"><BR>
 					<H3>FUNCIONARIOS</H3></TH>
@@ -238,8 +302,7 @@ body {
 			</TR>
 
 			<%
-				if (resultado != null) {
-						for (int i = 0; i < resultado.getEntidades().size(); i++) {
+				for (int i = 0; i < resultado.getEntidades().size(); i++) {
 							Funcionario p = (Funcionario) resultado.getEntidades().get(i);
 			%>
 
@@ -257,16 +320,13 @@ body {
 						<a href="ControleFuncionario?id=<%=p.getId()%>&operacao=PERFIL"><i
 							class="material-icons" style="color: green;">eject</i></a>
 					</div>
-					<div class="icon">
-						<a href="ControleFuncionario?id=<%=p.getId()%>&op=ex"><i
-							class="material-icons" style="color: green;">clear</i></a>
-					</div>
 				</td>
 			</TR>
 			<%
 				}
 					}
 				}
+				request.getSession().invalidate();
 			%>
 			</div>
 </body>

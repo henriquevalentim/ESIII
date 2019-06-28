@@ -30,25 +30,17 @@ public class FuncionarioVH implements IViewHelper {
 			funcionario = criarFuncionario(request);
 
 		} else if (operacao.equals("ALTERAR")) {
-
-			// Criei o funcionario com os campos que está no alterar
 			funcionario = criarFuncionario(request);
 
-			// colocar o id do funcionarioSession no funcionario
-			//funcionario.setId(Integer.parseInt(request.getParameter("id")));
-
 		} else if (operacao.equals("EXCLUIR")) {
-			session = request.getSession();
-			funcionario = (Funcionario) session.getAttribute("funcionario");
+			funcionario = criarFuncionario(request);
 
 		} else if (operacao.equals("CONSULTAR")) {
 			funcionario = criarFuncionario(request);
 
 		} else if (operacao.equals("PERFIL")) {
-			System.out.println("GetEntidade view PERFIL");
 			int id_funcionario = Integer.parseInt(request.getParameter("id"));
-			
-			funcionario  = new Funcionario(null, null, null, null, null, null, null,null);
+			funcionario = new Funcionario();
 			funcionario.setId(id_funcionario);
 		}
 
@@ -64,46 +56,45 @@ public class FuncionarioVH implements IViewHelper {
 		Regional regional = new Regional();
 		PerfilAtendimento perfil = new PerfilAtendimento();
 
-		
 		Usuario usuario = new Usuario();
 		usuario.setLogin(request.getParameter("txtEmail"));
 		usuario.setSenha(request.getParameter("txtSenha"));
-		
+
 		String idFuncionario = request.getParameter("txtIdFuncionario");
 		String idPerfil = request.getParameter("txtPerfil");
 		String idCargo = request.getParameter("txtCargo");
 		String idSetor = request.getParameter("txtSetor");
 		String idRegional = request.getParameter("txtRegional");
 		String idCadastradoPor = request.getParameter("txtCadastradoPor");
-		
-		if(idPerfil != null && !idPerfil.trim().equals("")) {
+
+		if (idPerfil != null && !idPerfil.trim().equals("")) {
 			perfil.setId(Integer.parseInt(idPerfil));
 		}
-		
+
 		usuario.setPerfilAtendimento(perfil);
 		funcionario.setNome(request.getParameter("txtNome"));
 		funcionario.setCpf(request.getParameter("txtCPF"));
 		funcionario.setEmail(request.getParameter("txtEmail"));
 		funcionario.setMatricula(request.getParameter("txtMatricula"));
 		funcionario.setSenha(request.getParameter("txtSenha"));
-		
-		if(idFuncionario != null && !idFuncionario.trim().equals("")) {
+
+		if (idFuncionario != null && !idFuncionario.trim().equals("")) {
 			funcionario.setId(Integer.parseInt(idFuncionario));
 		}
-		
-		if(idCadastradoPor != null && !idCadastradoPor.trim().equals("")) {
+
+		if (idCadastradoPor != null && !idCadastradoPor.trim().equals("")) {
 			funcionario.setCadastradoPor(Integer.parseInt(idCadastradoPor));
 		}
-		
-		if(idCargo != null && !idCargo.trim().equals("")) {
+
+		if (idCargo != null && !idCargo.trim().equals("")) {
 			cargo.setId(Integer.parseInt(idCargo));
 		}
-		
-		if(idSetor != null && !idSetor.trim().equals("")) {
+
+		if (idSetor != null && !idSetor.trim().equals("")) {
 			setor.setId(Integer.parseInt(idSetor));
 		}
-		
-		if(idRegional != null && !idRegional.trim().equals("")) {
+
+		if (idRegional != null && !idRegional.trim().equals("")) {
 			regional.setId(Integer.parseInt(idRegional));
 		}
 
@@ -127,29 +118,28 @@ public class FuncionarioVH implements IViewHelper {
 			d = request.getRequestDispatcher("FormFuncionario.jsp");
 
 		} else if (operacao.equals("SALVAR")) {
-			Funcionario funcionario = (Funcionario) resultado.getEntidades().get(0);
-			System.out.println("TO NA SALVAR VIEW");
-			request.getSession().setAttribute("funcionario", funcionario);
+			// Funcionario funcionario = (Funcionario) resultado.getEntidades().get(0);
+			resultado.setMsg("Cadastro realizado com sucesso.");
+			request.getSession().setAttribute("resultado", resultado);
 			d = request.getRequestDispatcher("FormFuncionario.jsp");
 
 		} else if (operacao.equals("CONSULTAR")) {
-			System.out.println("TO NO PESQUISAR VIEW");
+			resultado.setMsg("Consulta realizada com sucesso.");
 			request.getSession().setAttribute("resultado", resultado);
 			d = request.getRequestDispatcher("FormFuncionario.jsp");
 
 		} else if (operacao.equals("ALTERAR")) {
-			System.out.println("TO NO ALTERAR SET VIEW");
-			Funcionario funcionario = (Funcionario) resultado.getEntidades().get(0);
-			request.getSession().setAttribute("funcionario", funcionario);
+			resultado.setMsg("Alteração realizada com sucesso.");
+			request.getSession().setAttribute("resultado", resultado);
 			d = request.getRequestDispatcher("FormFuncionario.jsp");
 
 		} else if (operacao.equals("EXCLUIR")) {
-			System.out.println("TO NA EXCLUIR VIEW");
+			resultado.setMsg("Funcionario inativado com sucesso.");
+			request.getSession().setAttribute("resultado", resultado);
 			d = request.getRequestDispatcher("FormFuncionario.jsp");
 
-		}else if(operacao.equals("PERFIL")) {
-			System.out.println("TO NO PERFIL VIEW");
-			Funcionario funcionario = (Funcionario)resultado.getEntidades().get(0);
+		} else if (operacao.equals("PERFIL")) {
+			Funcionario funcionario = (Funcionario) resultado.getEntidades().get(0);
 			request.getSession().setAttribute("funcionario", funcionario);
 			d = request.getRequestDispatcher("FormFuncionario.jsp");
 		}
@@ -157,5 +147,4 @@ public class FuncionarioVH implements IViewHelper {
 		d.forward(request, response);
 
 	}
-
 }

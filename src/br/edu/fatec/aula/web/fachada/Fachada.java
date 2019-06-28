@@ -10,11 +10,11 @@ import br.edu.fatec.aula.dao.IDAO;
 import br.edu.fatec.aula.dominio.EntidadeDominio;
 import br.edu.fatec.aula.dominio.Funcionario;
 import br.edu.fatec.aula.dominio.Resultado;
-import br.edu.fatec.aula.negocio.CompletarDtCadastro;
-import br.edu.fatec.aula.negocio.IStrategy;
-import br.edu.fatec.aula.negocio.ValidarCpf;
-import br.edu.fatec.aula.negocio.ValidarDadosFuncionario;
-import br.edu.fatec.aula.negocio.ValidarExistencia;
+import br.edu.fatec.aula.strategy.CompletarDtCadastro;
+import br.edu.fatec.aula.strategy.IStrategy;
+import br.edu.fatec.aula.strategy.ValidarCpf;
+import br.edu.fatec.aula.strategy.ValidarDadosFuncionario;
+import br.edu.fatec.aula.strategy.ValidarSenha;
 
 public class Fachada implements IFachada {
 
@@ -24,13 +24,10 @@ public class Fachada implements IFachada {
 	Resultado resultado;
 
 	IDAO dao = null;
-
 	String nmClasse = null;
-
 	List<IStrategy> rng = null;
 
 	public Fachada() {
-		super();
 		daos = new HashMap<String, IDAO>();
 		rns = new HashMap<String, List<IStrategy>>();
 
@@ -39,14 +36,14 @@ public class Fachada implements IFachada {
 
 		IStrategy vFuncionario = new ValidarDadosFuncionario();
 		IStrategy vCpf = new ValidarCpf();
-		IStrategy vExistencia = new ValidarExistencia();
 		IStrategy cDtCad = new CompletarDtCadastro();
+		IStrategy vSenha = new ValidarSenha();
 
 		List<IStrategy> rnsFuncionario = new ArrayList<IStrategy>();
 		rnsFuncionario.add(vFuncionario);
 		rnsFuncionario.add(vCpf);
-		// rnsFuncionario.add(vExistencia);
 		rnsFuncionario.add(cDtCad);
+		rnsFuncionario.add(vSenha);
 
 		rns.put(Funcionario.class.getName(), rnsFuncionario);
 
@@ -61,14 +58,10 @@ public class Fachada implements IFachada {
 
 		executarRegras(rng, entidade);
 
-		if (nmClasse == Funcionario.class.getName()) {
-			Funcionario funcionario = (Funcionario) entidade;
-		}
-
+		// se tem msg de erro ele não salva
 		if (sb.length() == 0 || sb.toString().trim().equals("")) {
 			try {
 				dao = daos.get(nmClasse);
-				System.out.println("To no dao indo salvar no DAOCliente");
 				dao.salvar(entidade);
 				resultado.addEntidades(entidade);
 			} catch (Exception e) {
@@ -90,8 +83,7 @@ public class Fachada implements IFachada {
 		for (IStrategy strategy : rngEntidade) {
 			msg = strategy.processar(entidade);
 			if (msg != null) {
-				sb.append(msg + "\n");
-				System.out.println(msg);
+				sb.append(msg);
 			}
 		}
 	}
@@ -103,13 +95,6 @@ public class Fachada implements IFachada {
 		nmClasse = entidade.getClass().getName();
 
 		executarRegras(rns.get(nmClasse), entidade);
-
-		// verificar se é um cliente pq cliente tem q verificar alem dos dados dele
-		// tem q validar os dados de end e usu
-		if (nmClasse == Funcionario.class.getName()) {
-			Funcionario funcionario = (Funcionario) entidade;
-
-		}
 
 		if (sb.toString().trim().equals("")) {
 			try {
@@ -131,10 +116,9 @@ public class Fachada implements IFachada {
 	}
 
 	public Resultado excluir(EntidadeDominio entidade) {
+		resultado = new Resultado();
 
 		String nmClasse = entidade.getClass().getName();
-
-		resultado = new Resultado();
 
 		dao = daos.get(nmClasse);
 
@@ -157,6 +141,7 @@ public class Fachada implements IFachada {
 		nmClasse = entidade.getClass().getName();
 		
 		dao = daos.get(nmClasse);
+		
 		try {
 			resultado.setEntidades(dao.consultar(entidade));
 		}catch(Exception e) {

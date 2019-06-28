@@ -28,9 +28,9 @@ public class Filtro {
 		String selectFuncionario = querryFuncionario(funcionario);
 		if (flgFuncionario) {
 			querry += " WHERE " + selectFuncionario + " AND F.fun_car_id = C.car_id AND ";
-			querry += "F.fun_reg_id = R.reg_id AND F.fun_set_id = S.set_id;";
+			querry += "F.fun_reg_id = R.reg_id AND F.fun_set_id = S.set_id AND fun_status = true;";
 		} else if (!flgFuncionario) {
-			querry += " WHERE F.fun_car_id = C.car_id AND F.fun_reg_id = R.reg_id AND F.fun_set_id = S.set_id;";
+			querry += " WHERE F.fun_car_id = C.car_id AND F.fun_reg_id = R.reg_id AND F.fun_set_id = S.set_id AND fun_status = true;";
 		}
 		System.out.println(querry);
 		return querry;
@@ -122,8 +122,9 @@ public class Filtro {
 		// teve filtro?
 		if (flgWhere) {
 			for (Integer i : listQuerryFuncionario) {
-				if (i != listQuerryFuncionario.get(0))
-					selectFuncionario += " AND ";
+				if (i != listQuerryFuncionario.get(0)) {
+					selectFuncionario += " AND "; 
+				}
 
 				selectFuncionario += mapFiltroQuerry.get(i);
 			}

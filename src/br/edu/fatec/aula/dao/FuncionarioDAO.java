@@ -44,7 +44,7 @@ public class FuncionarioDAO implements IDAO {
 			sql.append("fun_email,fun_matricula,fun_senha,fun_cadastradopor_usu_id,fun_reg_id,");
 			sql.append("fun_car_id,fun_usu_id,fun_set_id,fun_dtcontratacao) VALUES (?,?,?,?,?,?,?,?,?,?,?)");
 
-			pst = connection.prepareStatement(sql.toString(), Statement.RETURN_GENERATED_KEYS);
+			pst = connection.prepareStatement(sql.toString());
 
 			pst.setString(1, funcionario.getNome());
 			pst.setString(2, funcionario.getCpf());
@@ -59,12 +59,6 @@ public class FuncionarioDAO implements IDAO {
 			pst.setString(11, new Date().toString());
 
 			pst.executeUpdate();
-
-			ResultSet rs = pst.getGeneratedKeys();
-			int idFuncionario = 0;
-			if (rs.next())
-				idFuncionario = rs.getInt(1);
-			funcionario.setId(idFuncionario);
 
 			connection.commit();
 		} catch (Exception e) {
@@ -96,7 +90,7 @@ public class FuncionarioDAO implements IDAO {
 			StringBuilder sql = new StringBuilder();
 			sql.append("UPDATE tb_funcionario SET fun_nome = ?, fun_cpf = ?,");
 			sql.append("fun_email = ?,fun_reg_id = ?,fun_car_id=?,");
-			sql.append("fun_set_id=? where fun_matricula = ?");
+			sql.append("fun_set_id=?,fun_matricula = ? where fun_id = ?");
 
 			pst = connection.prepareStatement(sql.toString());
 
@@ -107,8 +101,10 @@ public class FuncionarioDAO implements IDAO {
 			pst.setInt(5, funcionario.getCargo().getId());
 			pst.setInt(6, funcionario.getSetor().getId());
 			pst.setString(7, funcionario.getMatricula());
+			pst.setInt(8, funcionario.getId());
 
 			pst.executeUpdate();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -147,6 +143,7 @@ public class FuncionarioDAO implements IDAO {
 
 		Filtro filtro = new Filtro();
 
+		
 		String querry = filtro.gerarQuerry(funcionario);
 
 		try {
@@ -167,7 +164,8 @@ public class FuncionarioDAO implements IDAO {
 				func.setCpf(rs.getString("fun_cpf"));
 				func.setEmail(rs.getString("fun_email"));
 				func.setMatricula(rs.getString("fun_matricula"));
-
+				func.setSenha(rs.getString("fun_senha"));
+			
 				car.setId(rs.getInt("car_id"));
 				car.setDescricao(rs.getString("car_descricao"));
 				regional.setId(rs.getInt("reg_id"));
